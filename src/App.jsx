@@ -25,6 +25,8 @@ const products = productsFromServer.map((product) => {
 
 export const App = () => {
   const [selectedUser, selectUser] = useState(userTabs[0]);
+  const [query, setQuery] = useState('');
+
   const handleUserClick = (user) => {
     if (user.id !== selectedUser.id) {
       selectUser(user);
@@ -39,6 +41,10 @@ export const App = () => {
 
       return product.owner.id === selectedUser.id;
     });
+
+  const selectedProducts = (Products, search) => Products
+    .filter(product => product.name.toLowerCase()
+      .includes(search.toLocaleCase()));
 
   return (
     <div className="section">
@@ -75,7 +81,9 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  onChange={(event) => {
+                    setQuery((event.target.value).toLocaleLowerCase().trim());
+                  }}
                 />
 
                 <span className="icon is-left">
@@ -148,7 +156,7 @@ export const App = () => {
 
         <div className="box table-container">
 
-          {filteredProducts.length === 0
+          {selectedProducts.length === 0
             ? (
               <p data-cy="NoMatchingMessage">
                 No products matching selected criteria
@@ -214,7 +222,7 @@ export const App = () => {
                 </thead>
 
                 <tbody>
-                  {filteredProducts.map(product => (
+                  {selectedProducts(filteredProducts, query).map(product => (
                     <tr data-cy="Product">
                       <td className="has-text-weight-bold" data-cy="ProductId">
                         {product.id}
